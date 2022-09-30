@@ -18,21 +18,21 @@ https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0218904
 Once it is finished, you should find in your WD: 
 
 - a Site x species csv table (smartarID labels as rows, images as columns) 
+- a Site x species csv table with the aphiaIDs and the higher taxonomic levels (smartarID labels + taxonomy as rows, images as columns)
 
 | Label names  | level 1 | image 1 | image 2 |
 | ------------- | ------------- | ------------- | ------------- |
 | worm 1  | wormidea | 0 | 1 |
 | worm 2  | wormidea | 1  | 0 |
 
-- a Site x species csv table with the aphiaIDs and the higher taxonomic levels (smartarID labels + taxonomy as rows, images as columns)
 - a species x site csv table (images as rows, smartarID labels as columns)
+- a species with the aphiaIDs and the higher taxonomic levels x site csv table (images as rows, smartarID labels + taxonomy as columns)
 
 | filename | wormidea | wormidea |
 | ------------- | ------------- | ------------- |
-| filename | worm 1 | worm 2 |
+| level 1 | worm 1 | worm 2 |
 | image 1  | 0 | 1 |
 | image 2  | 1  | 0 |
 
-- a species with the aphiaIDs and the higher taxonomic levels x site csv table (images as rows, smartarID labels + taxonomy as columns)
 
 
