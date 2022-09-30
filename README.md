@@ -14,6 +14,7 @@ https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0218904
 4) Follow the instructions on how to import your Biigle reports 
 5) Run the script cell by cell or knit it 
 
+## Output
 Once it is finished, you should find in your WD: 
 
 - a Site x species csv table (smartarID labels as rows, images as columns) 
