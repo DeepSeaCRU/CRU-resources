@@ -20,7 +20,7 @@ Once it is finished, you should find in your WD:
 - a Site x species csv table (smartarID labels as rows, images as columns) 
 
 | Label names  | level 1 | image 1 | image 2 |
-| ------------- | ------------- | ------------- |
+| ------------- | ------------- | ------------- | ------------- |
 | worm 1  | wormidea | 0 | 1 |
 | worm 2  | wormidea | 1  | 0 |
 
