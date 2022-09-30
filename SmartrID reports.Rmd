@@ -1,5 +1,5 @@
 ---
-title: "Processing SMarTaR-ID reports"
+title: "TEST: Processing SMarTaR-ID reports"
 author: "Deep Sea Conservation Research Unit - Nils Piechaud & Kerry Howell"
 date: "2022"
 output:
@@ -8,7 +8,6 @@ output:
     highlight: github
 
 ---
-
 This document is to help you convert your annotated data downloaded from Biigle into a format that is suitable for multivariate analysis. It also enables you to link the annotation labels to taxonomic data in the World Register of Marine Species https://www.marinespecies.org/, using their aphia ID numbers.     
 
 ## Check that necessary packages have been installed
