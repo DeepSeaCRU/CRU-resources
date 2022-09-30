@@ -32,7 +32,8 @@ You will need to replace the path to the location of the folder you want to work
 
 
 ```{r, message=FALSE , warning=FALSE}
-wd <- "C:/Users/khowell/Desktop/smartrid/TestingSMID"
+# fetch the pathway to the dir where your script is
+wd <- dirname(rstudioapi::getSourceEditorContext()$path)
 
 paste0(wd,"/reports") -> reports_dir
 reports_dir %>% dir.create()
