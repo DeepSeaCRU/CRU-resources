@@ -8,11 +8,11 @@ Includes:
 - table of AphiaID for SMarTar-ID (https://smartar-id.app) labels 
 
 Installation 
-- 1) Download the repository to your machine 
-- 2) Unizip it in a directory of your choice on your machine
-- 3) Open the SmartrID reports.Rmd file with Rstudio 
-- 4) Follow the instructions on how to import your Biigle reports 
-- 5) Run the script cell by cell or knit it 
+1) Download the repository to your machine 
+2) Unizip it in a directory of your choice on your machine
+3) Open the SmartrID reports.Rmd file with Rstudio 
+4) Follow the instructions on how to import your Biigle reports 
+5) Run the script cell by cell or knit it 
 
 Once it is finished, you should find in your WD: 
 
