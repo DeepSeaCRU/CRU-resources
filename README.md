@@ -21,10 +21,12 @@ Once it is finished, you should find
 - a species x site csv table (images as rows, smartarID labels as columns)
 - a species with the aphiaIDs and the higher taxonomic levels x site csv table (images as rows, smartarID labels + taxonomy as columns)
 
-</details>
+</Once it is finished, you should find>
 
 <details open>
 <summary>Inference</summary>
+- a Site x species csv table (smartarID labels as rows, images as columns) 
+- a Site x species csv table with the aphiaIDs and the higher taxonomic levels (smartarID labels + taxonomy as rows, images as columns)
+- a species x site csv table (images as rows, smartarID labels as columns)
+- a species with the aphiaIDs and the higher taxonomic levels x site csv table (images as rows, smartarID labels + taxonomy as columns)
 
-YOLOv5 [PyTorch Hub](https://github.com/ultralytics/yolov5/issues/36) inference. [Models](https://github.com/ultralytics/yolov5/tree/master/models) download automatically from the latest
-YOLOv5 [release](https://github.com/ultralytics/yolov5/releases).
