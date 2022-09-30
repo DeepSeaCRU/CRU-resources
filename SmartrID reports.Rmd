@@ -29,6 +29,7 @@ library(magrittr)
 This will create the folder needed for the rest of this code to work properly
 
 You will need to replace the path to the location of the folder you want to work from on your machine
+Or leave the code as it is, the first line will pick up the pathway to where your file is
 
 
 ```{r, message=FALSE , warning=FALSE}
