@@ -161,7 +161,6 @@ allannotations %>% left_join(OTU_meta, by = "label_name") -> allannotations_taxo
 
 ```{r}
 
-
 # rearrange it and calculate the count of each OTU per image
 allannotations_taxonomy %>%
   # keep the label and its hierarchy
@@ -203,10 +202,16 @@ siteXsp <-   allannotations_count %>%
     id_cols = label_name,
     values_from = count,
     values_fill = list(count = 0)
-  ) %>%
-  left_join(OTU_meta, ., by = "label_name")
+  ) 
 # export it
 siteXsp %>% write_csv(paste0(wd, "/", "siteXsp.csv"))
+
+
+# add the taxonomy info
+taxonomy_siteXsp <- siteXsp %>%
+  left_join(OTU_meta, ., by = "label_name")
+# export it
+taxonomy_siteXsp %>% write_csv(paste0(wd, "/", "taxonomy_siteXsp.csv"))
 
 
 
