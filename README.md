@@ -17,11 +17,11 @@ Installation
 Once it is finished, you should find in your WD: 
 
 - a Site x species csv table (smartarID labels as rows, images as columns) 
--
-| Label names  | image 1 |
-| ------------- | ------------- |
-| sponge 1  | 0 |
-| sponge 2  | 1  |
+
+| Label names  | image 1 | image 2 |
+| ------------- | ------------- | ------------- |
+| worm 1  | 0 | 1 |
+| worm 2  | 1  | 0 |
 
 - a Site x species csv table with the aphiaIDs and the higher taxonomic levels (smartarID labels + taxonomy as rows, images as columns)
 - a species x site csv table (images as rows, smartarID labels as columns)
