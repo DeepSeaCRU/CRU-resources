@@ -37,16 +37,8 @@ Or leave the code as it is, the first line will pick up the pathway to where you
 wd <- dirname(rstudioapi::getSourceEditorContext()$path)
 
 paste0(wd,"/reports") -> reports_dir
-reports_dir %>% dir.create()
+
 paste0(wd,"/taxonomy") -> taxonomy_dir
-taxonomy_dir %>% dir.create()
-
-# download the aphia IDs and 
-"https://raw.githubusercontent.com/DeepSeaCRU/CRU-resources/main/Label_tree_aphiaIDs.csv" %>%
-  read_csv() -> aphiaIDs
-
-# save it as a csv table in the taxonomy directory 
- aphiaIDs%>% write_csv( paste0(taxonomy_dir,"/Label_tree_aphiaIDs.csv") )
  
 ```
 
