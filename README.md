@@ -17,6 +17,7 @@ Installation
 Once it is finished, you should find in your WD: 
 
 - a Site x species csv table (smartarID labels as rows, images as columns) 
+-
 | Label names  | image 1 |
 | ------------- | ------------- |
 | sponge 1  | 0 |
