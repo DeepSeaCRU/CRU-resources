@@ -8,13 +8,13 @@ Includes:
 - table of AphiaID for SMarTar-ID (https://smartar-id.app) labels 
 
 installation 
-- download the repository
-- unizip it in a directory of your choice on your machine
-- open the SmartrID reports.Rmd file
-- follow the instructions on how to import your Biigle reports 
-- run the script
+- 1) Download the repository to your machine 
+- 2) Unizip it in a directory of your choice on your machine
+- 3) Open the SmartrID reports.Rmd file
+- 4) follow the instructions on how to import your Biigle reports 
+- 5) run the script
 
-Once it is finished, you should find
+Once it is finished, you should find in your WD: 
 
 - a Site x species csv table (smartarID labels as rows, images as columns) 
 - a Site x species csv table with the aphiaIDs and the higher taxonomic levels (smartarID labels + taxonomy as rows, images as columns)
