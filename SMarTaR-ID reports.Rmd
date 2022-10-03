@@ -1,0 +1,218 @@
+---
+title: "Processing SMarTaR-ID reports"
+author: "Deep Sea Conservation Research Unit - Nils Piechaud & Kerry Howell"
+date: "2022"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+
+---
+
+This document is to help you convert your annotated data downloaded from Biigle into a format that is suitable for multivariate analysis. It also enables you to link the annotation labels to taxonomic data in the World Register of Marine Species https://www.marinespecies.org/, using their aphia ID numbers.     
+
+## Check that necessary packages have been installed
+
+```{r, message = FALSE}
+
+install.packages( 
+setdiff( c("tidyverse","magrittr"),installed.packages()[,1] )
+)
+
+library(tidyverse)
+library(magrittr)
+
+```
+
+## Set the working environment ## 
+
+This will create the folder needed for the rest of this code to work properly
+
+You can replace the path to the location of the folder you want to work from on your machine (C:/User/Name/Documents/...)
+Or leave the code as it is, the first line will pick up the pathway to where your file is
+
+
+```{r, message=FALSE , warning=FALSE}
+# fetch the pathway to the dir where your script is
+wd <- dirname(rstudioapi::getSourceEditorContext()$path)
+
+paste0(wd,"/reports") -> reports_dir
+
+paste0(wd,"/taxonomy") -> taxonomy_dir
+ 
+```
+
+Now that the folders are ready you can manually drop the Biigle CSV reports zips (as many as you want) in the 'reports' folder. 
+Instructions to download the csv reports can be found here:
+https://biigle.de/manual/tutorials/reports/reports-schema#annotation-csv-report
+
+You need to select the csv type of 'Report variant' in Biigle. 
+If you download reports from Biigle at the level of the project, you will need to first unzip the main folder, leaving you with multiple zipped volume folders to the add to the 'reports' folder.
+
+Check that the sheet "Label_tree_aphiaIDs.csv" has successfully downloaded into the 'Taxonomy' folder. This sheet is used to add the aphiaIDs to the smartrID names. If it has successfully installed itself in the folder, all is well, you may continue running code. 
+
+If it is not present in the Taxonomy folder, you will need to manually download from here: https://github.com/DeepSeaCRU/CRU-resources/blob/main/Label_tree_aphiaIDs.csv, and then add to the folder 'Taxonomy'. If the sheet "Label_tree_aphiaIDs.csv" cannot be found, the script will throw an error.
+
+When that is done you can run the rest of the script.
+
+
+```{r}
+
+
+# add the taxonomy to the lables (so annotations can be grouped into higher levels bins)
+paste0(taxonomy_dir,"/Label_tree_aphiaIDs.csv") %>% read_csv() %>% 
+  select(- label_tree_id) -> aphiaIDs
+
+
+# Open all biigle CSV reports in reports_dir
+
+# list the csv tables -
+list.files(reports_dir, pattern = "csv_image_annotation_report") -> files
+
+# 2) make a metadata table --------------------------------------------------------------------------------
+
+tibble(file = files) %>%
+  mutate(table_name = str_remove(file, pattern = ".zip")) %>%
+  # make a column of volume ID number
+  mutate(volume = str_remove(table_name, pattern = "_csv_image_annotation_report")) -> annotationTables
+
+
+# make a list to store all transformed tables tables
+Dframes  <- as.list(1:nrow(annotationTables))
+
+for (i in seq(Dframes)) {
+  # select the table number i
+  annotationTables %>% slice(i) -> meta.i
+  # import it
+  meta.i %>% pull(file) %>% paste(reports_dir, ., sep = "/") %>%
+    read_csv(col_types = cols()) -> D.i
+  # add the metadata
+  bind_cols(D.i, meta.i) ->  Dframes[[i]]
+  
+}
+
+# This is your table of everything
+Dframes %>% bind_rows() -> allannotations
+
+
+
+```
+
+## separate the taxonomic levels 
+```{r}
+
+# table of metadata per OTU
+allannotations %>%  distinct(label_name, label_hierarchy) -> OTU_meta
+
+
+# label hierarchy without the final OTU name
+# number of hierarchy levels
+OTU_meta %<>% mutate(n_taxonomy_levels = label_hierarchy %>%
+                       str_split(pattern = " > ") %>%
+                       map(function(x)
+                         return(length(x))) %>%
+                       unlist)
+# make the taxonomy column a table
+taxonomies <- OTU_meta %>%
+  pull(label_hierarchy) %>%
+  str_split(pattern = " > ") %>%
+  map(function(x)
+    return(head(x, -1))) # remove last element as it is the OTU
+# add names to thins list
+names(taxonomies) <- OTU_meta %>% pull(label_name)
+# maximum number of levels
+taxonomies %>% map(length) %>% unlist() %>% max() -> max_levels
+
+# re-arrange table 
+otutable <- function(x) {
+  c(x  , rep("OTU", max_levels - length(x))) %>%
+    as_tibble() %>%  mutate(levels = paste0("level", 1:max_levels)) %>%
+    pivot_wider(names_from = levels)
+}
+
+# add it to the mapped 
+taxonomies %<>% map(otutable) %>% bind_rows()
+
+OTU_meta %<>%
+  select(-label_hierarchy) %>%
+  bind_cols(taxonomies)
+
+
+# add the info from the catalogue to the OTU table
+OTU_meta %<>% left_join(aphiaIDs, by = c("label_name" = "name"))
+
+
+#add the OTU info to the annotations
+allannotations %>% left_join(OTU_meta, by = "label_name") -> allannotations_taxonomy
+
+
+```
+
+
+## Rearrange tables and export to CSV
+
+```{r}
+
+# rearrange it and calculate the count of each OTU per image
+allannotations_taxonomy %>%
+  # keep the label and its hierarchy
+  group_by(image_id, filename, volume, label_name, label_hierarchy) %>%
+  # count the
+  summarise(count = n()) %>%
+  ungroup() %>%
+  mutate(image_id = as.character(image_id)) -> allannotations_count
+
+# 4) rearrange the table into useful format -------------------------------------------------------------------
+# contingency table
+spXsite <-    allannotations_count %>%
+  pivot_wider(
+    id_cols = c(filename),
+    names_from = label_name,
+    values_from = count,
+    values_fill = list(count = 0)
+  )
+# export it as a table into your Working directory
+spXsite %>% write_csv(paste0(wd, "/", "spXsite.csv"))
+
+
+# add the taxonomny as head over the species names
+OTU_meta %>% select(label_name, aphia_id, contains("level")) %>% select(-n_taxonomy_levels) %>%
+  column_to_rownames("label_name") %>%
+  t %>%
+  as.data.frame %>%
+  rownames_to_column("key") %>% rename(filename = key)  %>% 
+
+bind_rows( spXsite %>%  mutate_if(is.integer, as.character)) -> head_spXsite
+
+head_spXsite %>% write_csv(paste0(wd, "/", "taxonomy_spXsite.csv"))
+
+
+# list of sample
+siteXsp <-   allannotations_count %>%
+  pivot_wider(
+    names_from  = filename,
+    id_cols = label_name,
+    values_from = count,
+    values_fill = list(count = 0)
+  ) 
+# export it
+siteXsp %>% write_csv(paste0(wd, "/", "siteXsp.csv"))
+
+
+# add the taxonomy info
+taxonomy_siteXsp <- siteXsp %>%
+  left_join(OTU_meta, ., by = "label_name")
+# export it
+taxonomy_siteXsp %>% write_csv(paste0(wd, "/", "taxonomy_siteXsp.csv"))
+
+
+
+```
+
+
+
+
+
+
+
+
