@@ -83,11 +83,28 @@ Dframes  <- as.list(1:nrow(annotationTables))
 for (i in seq(Dframes)) {
   # select the table number i
   annotationTables %>% slice(i) -> meta.i
+  # read the name of the table 
+ meta.i %>% pull(file) %>% paste(reports_dir, ., sep = "/") %>%
+   zip::zip_list() %>%
+   pull(filename) %>%
+   str_remove(".csv") %>%
+   str_remove(pattern = paste0(meta.i$volume,"-")) -> meta.i$volume_name
   # import it
   meta.i %>% pull(file) %>% paste(reports_dir, ., sep = "/") %>%
     read_csv(col_types = cols()) -> D.i
+  
+  # if there are no annotations, skip to the next report
+  if(D.i %>% nrow() < 1){
+    print(paste0("No annotations in ",meta.i$volume, "-", meta.i$volume_name))
+    tibble() ->  Dframes[[i]]
+    next
+  }
   # add the metadata
-  bind_cols(D.i, meta.i) ->  Dframes[[i]]
+  bind_cols(D.i, meta.i) ->   D.imeta
+    
+  D.imeta ->  Dframes[[i]]
+  
+  rm(D.i, D.imeta)
   
 }
 
