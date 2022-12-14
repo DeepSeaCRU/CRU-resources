@@ -170,24 +170,45 @@ allannotations %>% left_join(OTU_meta, by = "label_name") -> allannotations_taxo
 
 ```{r}
 
+
+allannotations_taxonomy %>% distinct(filename, volume) %>% count(filename) %>% filter(n > 1) -> duplicated_image_check
+
+if( nrow(duplicated_image_check)> 0){ 
+  print("Some of your images are present in multiple volumes -- volume names will be included in the matrices")
+  
+}
+
+
 # rearrange it and calculate the count of each OTU per image
 allannotations_taxonomy %>%
   # keep the label and its hierarchy
-  group_by(image_id, filename, volume, label_name, label_hierarchy) %>%
+  group_by(image_id, filename, volume,volume_name, label_name, label_hierarchy) %>%
   # count the
   summarise(count = n()) %>%
   ungroup() %>%
   mutate(image_id = as.character(image_id)) -> allannotations_count
 
-# 4) rearrange the table into useful format -------------------------------------------------------------------
+# rearrange the table into useful formats -------------------------------------------------------------------
 # contingency table
-spXsite <-    allannotations_count %>%
-  pivot_wider(
-    id_cols = c(filename),
-    names_from = label_name,
-    values_from = count,
-    values_fill = list(count = 0)
-  )
+if(nrow(duplicated_image_check)> 0) {
+  # contingency table
+  spXsite <-    allannotations_count %>%
+    pivot_wider(
+      id_cols = c(filename, volume, volume_name),
+      names_from = label_name,
+      values_from = count,
+      values_fill = list(count = 0)
+    )
+} else{
+  # contingency table
+  spXsite <-    allannotations_count %>%
+    pivot_wider(
+      id_cols = c(filename),
+      names_from = label_name,
+      values_from = count,
+      values_fill = list(count = 0)
+    )
+}
 # export it as a table into your Working directory
 spXsite %>% write_csv(paste0(wd, "/", "spXsite.csv"))
 
@@ -204,14 +225,24 @@ bind_rows( spXsite %>%  mutate_if(is.integer, as.character)) -> head_spXsite
 head_spXsite %>% write_csv(paste0(wd, "/", "taxonomy_spXsite.csv"))
 
 
-# list of sample
-siteXsp <-   allannotations_count %>%
-  pivot_wider(
-    names_from  = filename,
-    id_cols = label_name,
-    values_from = count,
-    values_fill = list(count = 0)
-  ) 
+if( nrow(duplicated_image_check) > 0){
+  # list of sample
+  siteXsp <-   allannotations_count %>%
+    pivot_wider(
+      names_from  = c(filename, volume, volume_name),
+      values_from = count,
+      values_fill = list(count = 0)
+    ) 
+}else{
+  # list of sample
+  siteXsp <-   allannotations_count %>%
+    pivot_wider(
+      names_from  = filename,
+      id_cols = label_name,
+      values_from = count,
+      values_fill = list(count = 0)
+    ) 
+} 
 # export it
 siteXsp %>% write_csv(paste0(wd, "/", "siteXsp.csv"))
 
@@ -221,8 +252,6 @@ taxonomy_siteXsp <- siteXsp %>%
   left_join(OTU_meta, ., by = "label_name")
 # export it
 taxonomy_siteXsp %>% write_csv(paste0(wd, "/", "taxonomy_siteXsp.csv"))
-
-
 
 ```
 
