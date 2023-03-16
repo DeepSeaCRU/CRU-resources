@@ -85,7 +85,8 @@ Your input is needed to:
 There are several blocks that check if all is in order. Remember to look at those messages in the console or the output panels on the markdown document. 
  
 Upload the [projectName] folder to your gdrive and connect to your favourite Colab notebook
-# The Colab notebook to train and use a YoloV5 model: 
+
+### The Colab notebook to train and use a YoloV5 model: 
 https://colab.research.google.com/drive/1q7SSKJ9cfpYar9bNf80AOYgePdlqK5XQ?usp=sharing 
 
 You will have to save a copy of the notebook on your own GDrive to modify it and keep changes (pathways, parameters...) for later. if you dont save a copy you can still run the code but all modifications will be lost when you quit the runtime session.
